@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\DB;
 use Request;
+use Validator;
 use estoque\Produto;
+use estoque\Http\Requests\ProdutoRequest;
 
 class ProdutoController extends Controller {
 
@@ -12,7 +14,8 @@ class ProdutoController extends Controller {
 
 		if (view()->exists('produto.listagem'))
 		{
-			return view('produto.listagem')->withProdutos($produtos);
+			return view('produto.listagem')
+				->withProdutos($produtos);
 		}
 	}
 
@@ -24,7 +27,8 @@ class ProdutoController extends Controller {
 		{
 			return "Esse produto não existe";
 		}
-		return view('produto.detalhes')->withProduto($produto);
+		return view('produto.detalhes')
+			->withProduto($produto);
 	}
 
 	public function remove($id)
@@ -32,7 +36,8 @@ class ProdutoController extends Controller {
 		$produto = Produto::find($id);
 		$produto->delete();
 
-		return redirect()->action('ProdutoController@lista');
+		return redirect()
+			->action('ProdutoController@lista');
 	}
 
 
@@ -41,22 +46,21 @@ class ProdutoController extends Controller {
 		return view('produto.formulario');
 	}
 
-	public function adiciona()
+	public function adiciona(ProdutoRequest $request)
 	{
-		# $params  = Request::all();
-		# $produto = new Produto($params);
-		# $produto->save();
+		Produto::create($request->all());
 
-		Produto::create(Request::all());
-
-		return redirect()->action('ProdutoController@lista')->withInput(Request::only('nome'));
+		return redirect()
+			->action('ProdutoController@lista')
+			->withInput(Request::only('nome'));
 
 	}
 
 	public function listaJson()
 	{
 	    $produtos = Produto::all();
-	    return response()->json($produtos);
+	    return response()
+	    	->json($produtos);
 	}
 
 
